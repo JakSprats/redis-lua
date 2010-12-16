@@ -1,14 +1,15 @@
-# redis-lua #
+# redis-lua fork w/ Alchemy Database commands #
 
 ## About ##
-
-redis-lua is a pure Lua client library for the Redis advanced key-value database.
+- redis-lua is a pure Lua client library for the Redis advanced key-value database.
+- This fork also includes commands for [Alchemy Database](http://code.google.com/p/alchemydatabase/)
 
 ## Main features ##
 
 - Support for Redis >= 1.2
 - Command pipelining
 - User-definable commands
+- Alchemy Commands
 
 ## Examples of usage ##
 
@@ -52,6 +53,34 @@ redis-lua is a pure Lua client library for the Redis advanced key-value database
         p:incrby('counter', 30)
         p:get('counter')
     end)
+
+### Make Alchemy calls
+    local t = redis:drop_table('logical_test_fk');
+    local t = redis:create_table('logical_test_fk','id INT, fk INT, count INT');
+    local t = redis:create_index('ind_ltestfk', 'logical_test_fk','fk');
+    local t = redis:desc('logical_test_fk');
+    for i,v in ipairs(t) do print(i,v); end
+    local t = redis:insert('logical_test_fk', '1,1,11');
+    local t = redis:insert('logical_test_fk', '2,1,11');
+    local t = redis:insert('logical_test_fk', '3,2,22');
+    local t = redis:insert('logical_test_fk', '4,2,22');
+    local t = redis:insert('logical_test_fk', '5,3,33');
+    local t = redis:insert('logical_test_fk', '6,3,33');
+    local t = redis:insert('logical_test_fk', '7,4,44');
+    local t = redis:insert('logical_test_fk', '8,4,44');
+    local t = redis:insert_return_size('logical_test_fk', '9,5,55');
+    local t = redis:dump('logical_test_fk');
+    for i,v in ipairs(t) do print(i,v); end
+    local t = redis:select('*', 'logical_test_fk', 'id = 8');
+    for i,v in ipairs(t) do print(i,v); end
+    local t = redis:select('*', 'logical_test_fk', 'fk = 4');
+    for i,v in ipairs(t) do print(i,v); end
+    local t = redis:update('logical_test_fk', 'count = 99', 'fk=4');
+    local t = redis:dump('logical_test_fk');
+    for i,v in ipairs(t) do print(i,v); end
+    local t = redis:delete('logical_test_fk', 'fk=5');
+    local t = redis:dump('logical_test_fk');
+    for i,v in ipairs(t) do print(i,v); end
 
 ### Get useful information from the server ###
 
@@ -103,12 +132,13 @@ redis-lua is a pure Lua client library for the Redis advanced key-value database
 
 ### Related ###
 - [Redis](http://code.google.com/p/redis/)
+- [Alchemy Database](http://code.google.com/p/alchemydatabase/)
 - [Git](http://git-scm.com/)
 
 ## Authors ##
-
-[Daniele Alessandri](mailto:suppakilla@gmail.com)
+- [Daniele Alessandri](mailto:suppakilla@gmail.com) - redis
+- [Russell Sullivan](mailto:jaksprats@gmail.com) - AlchemyDB
 
 ## License ##
 
-The code for redis-lua is distributed under the terms of the MIT/X11 license (see LICENSE).
+The code for redis-lua (and this fork) are distributed under the terms of the MIT/X11 license (see LICENSE).

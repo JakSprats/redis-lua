@@ -132,6 +132,7 @@
 
 ### Related ###
 - [Redis](http://code.google.com/p/redis/)
+- [Alchemy Database](http://code.google.com/p/alchemydatabase/)
 - [Git](http://git-scm.com/)
 
 ## Authors ##

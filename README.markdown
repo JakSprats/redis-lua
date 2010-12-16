@@ -1,9 +1,8 @@
 # redis-lua fork w/ Alchemy Database commands #
 
 ## About ##
-
-redis-lua is a pure Lua client library for the Redis advanced key-value database.
-This fork also includes commands for (Alchemy Database)[http://code.google.com/p/alchemydatabase/]
+- redis-lua is a pure Lua client library for the Redis advanced key-value database.
+- This fork also includes commands for [Alchemy Database](http://code.google.com/p/alchemydatabase/)
 
 ## Main features ##
 
@@ -123,9 +122,8 @@ This fork also includes commands for (Alchemy Database)[http://code.google.com/p
 - [Git](http://git-scm.com/)
 
 ## Authors ##
-
-[Daniele Alessandri](mailto:suppakilla@gmail.com) - redis
-[Russell Sullivan](mailto:jaksprats@gmail.com) - AlchemyDB
+- [Daniele Alessandri](mailto:suppakilla@gmail.com) - redis
+- [Russell Sullivan](mailto:jaksprats@gmail.com) - AlchemyDB
 
 ## License ##
 

@@ -144,9 +144,11 @@ function response.error(client, data)
     local err_line = data:sub(2)
 
     if err_line:sub(1, 3) == protocol.err then
-        error('redis error: ' .. err_line:sub(5))
+        print('redis error: ' .. err_line:sub(5))
+        --error('redis error: ' .. err_line:sub(5))
     else
-        error('redis error: ' .. err_line)
+        print('redis error: ' .. err_line)
+        --error('redis error: ' .. err_line)
     end
 end
 
@@ -659,7 +661,7 @@ commands = {
     publish          = command('PUBLISH'),
 
     -- multiple databases handling commands
-    select           = command('SELECT'),
+    --select           = command('SELECT'),
     move             = command('MOVE', { response = toboolean }),
     flushdb          = command('FLUSHDB'),
     flushall         = command('FLUSHALL'),
@@ -741,4 +743,219 @@ commands = {
     }),
     slaveof          = command('SLAVEOF'),
     config           = command('CONFIG'),
+
+    -- Alchemy commands
+    create_table     = command('CREATE', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 2 then
+                print ('Usage: create_table tablename column_definitions');
+                return false;
+            end
+            table.insert(arguments, 'TABLE');
+            table.insert(arguments, args[1]);
+            table.insert(arguments, '(' .. args[2] .. ')');
+            request.multibulk(client, command, arguments)
+        end
+    }),
+    drop_table       = command('DROP', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 1 then
+                print ('Usage: drop_table tablename');
+                return false;
+            end
+            table.insert(arguments, 'TABLE');
+            table.insert(arguments, args[1]);
+            request.multibulk(client, command, arguments)
+        end,
+    }),
+
+    create_index     = command('CREATE', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 3 then
+                print ('Usage: create_index indexname table column');
+                return false;
+            end
+            table.insert(arguments, 'INDEX');
+            table.insert(arguments, args[1]);
+            table.insert(arguments, 'ON');
+            table.insert(arguments, args[2]);
+            table.insert(arguments, '(' .. args[3] .. ')');
+            request.multibulk(client, command, arguments)
+        end
+    }),
+    drop_index       = command('DROP', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 1 then
+                print ('Usage: drop_index indexname');
+                return false;
+            end
+            table.insert(arguments, 'INDEX');
+            table.insert(arguments, args[1]);
+            request.multibulk(client, command, arguments)
+        end
+    }),
+
+    desc             = command('DESC'),
+    dump             = command('DUMP'),
+    dump_to_mysql    = command('DUMP', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 1 then
+                print ('Usage: dump_to_mysql tablename');
+                return false;
+            end
+            table.insert(arguments, args[1]);
+            table.insert(arguments, 'TO');
+            table.insert(arguments, 'MYSQL');
+            request.multibulk(client, command, arguments)
+        end
+    }),
+    dump_to_file     = command('DUMP', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 2 then
+                print ('Usage: dump_to_file tablename filename');
+                return false;
+            end
+            table.insert(arguments, args[1]);
+            table.insert(arguments, 'TO');
+            table.insert(arguments, 'FILE');
+            table.insert(arguments, args[2]);
+            request.multibulk(client, command, arguments)
+        end
+    }),
+
+    insert           = command('INSERT', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 2 then
+                print ('Usage: insert table "vals,,,,"');
+                return false;
+            end
+            table.insert(arguments, 'INTO');
+            table.insert(arguments, args[1]);
+            table.insert(arguments, 'VALUES');
+            table.insert(arguments, '(' .. args[2] .. ')');
+            request.multibulk(client, command, arguments)
+        end
+    }),
+
+    select           = command('SELECT', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args == 1 then
+                request.multibulk(client, command, args)
+            elseif #args ~= 3 then
+                print ('Usage: select "cols,,," "tbls,,,," where_clause');
+                return false;
+            else
+                table.insert(arguments, args[1]);
+                table.insert(arguments, 'FROM');
+                table.insert(arguments, args[2]);
+                table.insert(arguments, 'WHERE');
+                table.insert(arguments, args[3]);
+                request.multibulk(client, command, arguments)
+            end
+        end
+    }),
+    scanselect       = command('SCANSELECT', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args < 2 then
+                print ('Usage: scanselect "cols,,," "tbls,,,," [where_clause]');
+                return false;
+            else
+                table.insert(arguments, args[1]);
+                table.insert(arguments, 'FROM');
+                table.insert(arguments, args[2]);
+                if #args > 2 then
+                    local arg3_up = args[3]:upper();
+                    local store   = string.match (args[3], "^STORE");
+                    --if store then print ('store: ' .. store); end
+                    local ordby   = string.match (args[3], "^ORDER");
+                    --if ordby then print ('ordby: ' .. ordby); end
+                    if (not store and not ordby) then
+                        table.insert(arguments, 'WHERE');
+                    end
+                    table.insert(arguments, args[3]);
+                end
+                request.multibulk(client, command, arguments)
+            end
+        end
+    }),
+
+    update           = command('UPDATE', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 3 then
+                print ('Usage: update table "col=val,,," where_clause');
+                return false;
+            else
+                table.insert(arguments, args[1]);
+                table.insert(arguments, 'SET');
+                table.insert(arguments, args[2]);
+                table.insert(arguments, 'WHERE');
+                table.insert(arguments, args[3]);
+                request.multibulk(client, command, arguments)
+            end
+        end
+    }),
+
+    delete           = command('DELETE', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 2 then
+                print ('Usage: delete table where_clause');
+                return false;
+            else
+                table.insert(arguments, 'FROM');
+                table.insert(arguments, args[1]);
+                table.insert(arguments, 'WHERE');
+                table.insert(arguments, args[2]);
+                request.multibulk(client, command, arguments)
+            end
+        end
+    }),
+
+    -- CREATE_TABLE_AS
+    create_table_as  = command('CREATE', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 2 then
+                print ('Usage: create_table_as tablename command');
+                return false;
+            end
+            table.insert(arguments, 'TABLE');
+            table.insert(arguments, args[1]);
+            table.insert(arguments, 'AS ' .. args[2]);
+            request.multibulk(client, command, arguments)
+        end
+    }),
+
+    -- INSERT_RETURN_SIZE
+    insert_return_size = command('INSERT', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 2 then
+                print ('Usage: insert table "vals,,,,"');
+                return false;
+            end
+            table.insert(arguments, 'INTO');
+            table.insert(arguments, args[1]);
+            table.insert(arguments, 'VALUES');
+            table.insert(arguments, '(' .. args[2] .. ')');
+            table.insert(arguments, 'RETURN');
+            table.insert(arguments, 'SIZE');
+            request.multibulk(client, command, arguments)
+        end
+    }),
+
+    lua              = command('LUA'),
+    changedb         = command('CHANGEDB'),
+    norm             = command('NORM'),
+    denorm           = command('DENORM'),
 }

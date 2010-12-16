@@ -62,12 +62,25 @@
     for i,v in ipairs(t) do print(i,v); end
     local t = redis:insert('logical_test_fk', '1,1,11');
     local t = redis:insert('logical_test_fk', '2,1,11');
+    local t = redis:insert('logical_test_fk', '3,2,22');
+    local t = redis:insert('logical_test_fk', '4,2,22');
+    local t = redis:insert('logical_test_fk', '5,3,33');
+    local t = redis:insert('logical_test_fk', '6,3,33');
+    local t = redis:insert('logical_test_fk', '7,4,44');
+    local t = redis:insert('logical_test_fk', '8,4,44');
+    local t = redis:insert_return_size('logical_test_fk', '9,5,55');
+    local t = redis:dump('logical_test_fk');
+    for i,v in ipairs(t) do print(i,v); end
     local t = redis:select('*', 'logical_test_fk', 'id = 8');
     for i,v in ipairs(t) do print(i,v); end
     local t = redis:select('*', 'logical_test_fk', 'fk = 4');
     for i,v in ipairs(t) do print(i,v); end
     local t = redis:update('logical_test_fk', 'count = 99', 'fk=4');
+    local t = redis:dump('logical_test_fk');
+    for i,v in ipairs(t) do print(i,v); end
     local t = redis:delete('logical_test_fk', 'fk=5');
+    local t = redis:dump('logical_test_fk');
+    for i,v in ipairs(t) do print(i,v); end
 
 ### Get useful information from the server ###
 

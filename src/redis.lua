@@ -954,6 +954,7 @@ commands = {
         end
     }),
 
+    lua              = command('LUA'),
     changedb         = command('CHANGEDB'),
     norm             = command('NORM'),
     denorm           = command('DENORM'),

@@ -804,13 +804,16 @@ commands = {
     dump_to_mysql    = command('DUMP', {
         request = function(client, command, ...)
             local args, arguments = {...}, {}
-            if #args ~= 1 then
+            if #args ~= 1 and #args ~= 2 then
                 print ('Usage: dump_to_mysql tablename');
                 return false;
             end
             table.insert(arguments, args[1]);
             table.insert(arguments, 'TO');
             table.insert(arguments, 'MYSQL');
+            if #args == 2 then
+                table.insert(arguments, args[2]);
+            end
             request.multibulk(client, command, arguments)
         end
     }),

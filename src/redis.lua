@@ -744,7 +744,7 @@ commands = {
     slaveof          = command('SLAVEOF'),
     config           = command('CONFIG'),
 
-    -- Alchemy commands
+    -- ALCHEMY COMMANDS
     create_table     = command('CREATE', {
         request = function(client, command, ...)
             local args, arguments = {...}, {}

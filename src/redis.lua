@@ -786,6 +786,21 @@ commands = {
             request.multibulk(client, command, arguments)
         end
     }),
+    create_nri_index = command('CREATE', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 3 then
+                print ('Usage: create_nri_index indexname statement');
+                return false;
+            end
+            table.insert(arguments, 'INDEX');
+            table.insert(arguments, args[1]);
+            table.insert(arguments, 'ON');
+            table.insert(arguments, args[2]);
+            table.insert(arguments, args[3]);
+            request.multibulk(client, command, arguments)
+        end
+    }),
     drop_index       = command('DROP', {
         request = function(client, command, ...)
             local args, arguments = {...}, {}

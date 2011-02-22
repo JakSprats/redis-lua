@@ -775,7 +775,7 @@ commands = {
         request = function(client, command, ...)
             local args, arguments = {...}, {}
             if #args ~= 3 then
-                print ('Usage: create_index indexname table column');
+                print ('Usage: create_index indexname table column[s]');
                 return false;
             end
             table.insert(arguments, 'INDEX');
@@ -790,7 +790,7 @@ commands = {
         request = function(client, command, ...)
             local args, arguments = {...}, {}
             if #args ~= 3 then
-                print ('Usage: create_unique_index indexname table column');
+                print ('Usage: create_unique_index indexname table column[s]');
                 return false;
             end
             table.insert(arguments, 'UNIQUE');

@@ -802,14 +802,14 @@ commands = {
             request.multibulk(client, command, arguments)
         end
     }),
-    create_nri_index = command('CREATE', {
+    create_trigger = command('CREATE', {
         request = function(client, command, ...)
             local args, arguments = {...}, {}
             if #args ~= 3 then
-                print ('Usage: create_nri_index indexname statement');
+                print ('Usage: create_trigger triggername statement');
                 return false;
             end
-            table.insert(arguments, 'INDEX');
+            table.insert(arguments, 'TRIGGER');
             table.insert(arguments, args[1]);
             table.insert(arguments, 'ON');
             table.insert(arguments, args[2]);

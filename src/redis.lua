@@ -982,8 +982,7 @@ commands = {
             table.insert(arguments, args[1]);
             table.insert(arguments, 'VALUES');
             table.insert(arguments, '(' .. args[2] .. ')');
-            table.insert(arguments, 'RETURN');
-            table.insert(arguments, 'SIZE');
+            table.insert(arguments, 'RETURN SIZE');
             request.multibulk(client, command, arguments)
         end
     }),

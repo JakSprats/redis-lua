@@ -921,6 +921,47 @@ commands = {
             end
         end
     }),
+    select_count     = command('SELECT', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args ~= 2 then
+                print ('Usage: select_count "tbls,,,," where_clause');
+                return false;
+            else
+                table.insert(arguments, 'COUNT(*)');
+                table.insert(arguments, 'FROM');
+                table.insert(arguments, args[1]);
+                table.insert(arguments, 'WHERE');
+                table.insert(arguments, args[2]);
+                request.multibulk(client, command, arguments)
+            end
+        end
+    }),
+    scanselect_count = command('SCANSELECT', {
+        request = function(client, command, ...)
+            local args, arguments = {...}, {}
+            if #args < 1 then
+                print ('Usage: scanselect_count "tbls,,,," [where_clause]');
+                return false;
+            else
+                table.insert(arguments, 'COUNT(*)');
+                table.insert(arguments, 'FROM');
+                table.insert(arguments, args[1]);
+                if #args > 1 then
+                    local arg3_up = args[2]:upper();
+                    local store   = string.match (args[2], "^STORE");
+                    --if store then print ('store: ' .. store); end
+                    local ordby   = string.match (args[2], "^ORDER");
+                    --if ordby then print ('ordby: ' .. ordby); end
+                    if (not store and not ordby) then
+                        table.insert(arguments, 'WHERE');
+                    end
+                    table.insert(arguments, args[2]);
+                end
+                request.multibulk(client, command, arguments)
+            end
+        end
+    }),
 
     update           = command('UPDATE', {
         request = function(client, command, ...)
